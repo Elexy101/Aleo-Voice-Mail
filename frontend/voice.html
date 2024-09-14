@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- Basic Page Info -->
+	<meta charset="utf-8">
+	<title>Aleo-Voice Mail</title>
+
+	<!-- Site favicon -->
+	<link rel="apple-touch-icon" sizes="180x180" href="vendors/images/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="vendors/images/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="vendors/images/favicon-16x16.png">
+
+	<!-- Mobile Specific Metas -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<!-- Google Font -->
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+	<!-- CSS -->
+	<link rel="stylesheet" type="text/css" href="vendors/styles/core.css">
+	<link rel="stylesheet" type="text/css" href="vendors/styles/icon-font.min.css">
+	<link rel="stylesheet" type="text/css" href="src/plugins/datatables/css/dataTables.bootstrap4.min.css">
+	<link rel="stylesheet" type="text/css" href="src/plugins/datatables/css/responsive.bootstrap4.min.css">
+	<link rel="stylesheet" type="text/css" href="vendors/styles/style.css">
+	<link href="./audio-recorder-main/style.css" rel="stylesheet">  
+
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-119386393-1"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+
+		gtag('config', 'UA-119386393-1');
+	</script>
+</head>
+<body>
+
+
+<!-- HEADER -->
+	Sorry, only MP3, WAV, and OGG files are allowed.Sorry, your file was not uploaded.Not enough time has passed for a reward.
+
+	 <!-- ALEO WALLET MAIN.JS -->
+	<script src="./leo-wallet-bundle.js"></script>
+
+<script src="transaction.js"></script> <!-- Include the Transaction definition -->
+    
+<script>
+	function cleanU128Private(value) {
+    	return value.replace(/u128\.private$/, '');  // Removes the 'u128.private' part
+	}
+
+    if (window.leoWallet && window.leoWallet.readyState === "Installed") {
+        if (!window.leoWallet.connected) {
+            main_connect();
+        } else {
+            main_connect();
+        }
+    } else {
+        console.log("No wallet installed!");
+    }
+
+	//connected to wallet
+    async function main_connect() {
+	//sign a message
+	let utf8Encode = new TextEncoder();
+    let bytes = utf8Encode.encode("Welcome to Aleo Simple Messenger, Send message anonymously to another user...");
+
+    window.leoWallet.signMessage(bytes);
+
+    window.leoWallet.connect("ON_CHAIN_HISTORY", "testnetbeta", ["credits.aleo", "aleo_voice6.aleo"]);
+	window.leoWallet.requestRecordPlaintexts("aleo_voice6.aleo").then(res => {
+    console.log('Fetched Records:', res);
+
+    let tableBody = '';
+
+	let tableBody2 = '';
+
+	var publicKey = window.leoWallet.publicKey; // Replace with the actual public key
+
+    // Check if `res` contains a `records` array
+    if (res && Array.isArray(res.records)) {
+        // Filter records by `recordName` "Voice"
+        const voiceRecords = res.records.filter(record => record.recordName === "Voice");
+
+		tableBody += `				<thead>
+						<tr>
+							<th class="table-plus">Sender</th>
+							<th>Receiver</th>
+							<th>Msg</th>
+							<th>Date</th>
+							<th class="datatable-nosort">Actions</th>
+						</tr>
+					</thead>`;
+
+        if (voiceRecords.length > 0) {
+            // Loop through each filtered record
+            voiceRecords.forEach(record => {
+                // Extract fields for each record
+                const { receiver, msg, date, _nonce } = record.data;
+
+				// Clean the `msg` field from the `u128.private` suffix if present
+            	const cleanedMsg = cleanU128Private(msg);
+				const cleanedReceiver = cleanU128Private(receiver);
+				const cleaneddate = cleanU128Private(date);
+
+                // Create a table row with the extracted data
+                tableBody += `
+					<tbody>
+                    <tr>
+                        <td class="table-plus">
+                            <div class="name-avatar d-flex align-items-center">
+                                <div class="avatar mr-2 flex-shrink-0">
+                                    <img src="./anon/anon2.jpeg" class="border-radius-100 shadow" width="40" height="40" alt="">
+                                </div>
+                                <div class="txt">
+                                    <div class="weight-600">${publicKey.substr(0,10) + "..." + publicKey.substr(-6) || 'N/A'}</div>
+                                </div>
+                            </div>
+                        </td>
+						<td>${cleanedReceiver.substr(0,10) + "..." + cleanedReceiver.substr(-10) || 'N/A'}</td>
+                        <td>${cleanedMsg || 'N/A'}</td>
+                        <td><span id="testingtime">${cleaneddate || 'N/A'}</span></td>
+                        <td><span class="badge badge-pill" data-bgcolor="#e7ebf5" data-color="#265ed7">finalize</span></td>
+                    </tr>
+					</tbody>
+					`;
+            });
+        } else {
+            tableBody = '<tr><td colspan="4">No records found with the name "Voice"</td></tr>';
+        }
+    } else {
+        tableBody = '<tr><td colspan="4">No records found or data format is incorrect</td></tr>';
+    }
+
+
+
+	    // Check if `res` contains a `records` array
+		if (res && Array.isArray(res.records)) {
+        // Filter records by `recordName` "Voice"
+        const voiceRecords = res.records.filter(record => record.recordName === "Voice2");
+		
+		tableBody2 += `				<thead>
+						<tr>
+							<th class="table-plus">Addr</th>
+							<th>Msg</th>
+							<th>Date</th>
+							<th class="datatable-nosort">Actions</th>
+						</tr>
+					</thead>`;
+
+        if (voiceRecords.length > 0) {
+            // Loop through each filtered record
+            voiceRecords.forEach(record => {
+                // Extract fields for each record
+                const { sent_from, msg, date, _nonce } = record.data;
+
+				// Clean the `msg` field from the `u128.private` suffix if present
+            	const cleanedMsg2 = cleanU128Private(msg);
+				const cleaneddate2 = cleanU128Private(date);
+
+                // Create a table row with the extracted data
+                tableBody2 += `
+					<tbody>
+                    <tr>
+                        <td class="table-plus">
+                            <div class="name-avatar d-flex align-items-center">
+                                <div class="avatar mr-2 flex-shrink-0">
+                                    <img src="./anon/anon2.jpeg" class="border-radius-100 shadow" width="40" height="40" alt="">
+                                </div>
+                                <div class="txt">
+                                    <div class="weight-600">${sent_from.substr(0,10) + "..." + sent_from.substr(-6) || 'N/A'}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${cleanedMsg2 || 'N/A'}</td>
+                        <td><span id="testingtime">${cleaneddate2 || 'N/A'}</span></td>
+                        <td><span class="badge badge-pill" data-bgcolor="#e7ebf5" data-color="#265ed7">finalize</span></td>
+                    </tr>`;
+            });
+        } else {
+            tableBody2 = '<tr><td colspan="4">No records found with the name "Voice"</td></tr>';
+        }
+    } else {
+        tableBody2 = '<tr><td colspan="4">No records found or data format is incorrect</td></tr>';
+    }
+
+
+    // Insert the generated rows into the table body with a specific ID
+    document.getElementById("sentMessageTableBody").innerHTML = tableBody;
+	document.getElementById("sentMessageTableBody2").innerHTML = tableBody2;
+
+}).catch(err => {
+    console.error('Error fetching records:', err);
+    document.getElementById("sentMessageTableBody").innerHTML = '<tr><td colspan="4">Failed to retrieve records.</td></tr>';
+});
+
+	var publicKey = window.leoWallet.publicKey; // Replace with the actual public key
+    var sub_str_wallet = publicKey.substr(0, 10) + "..." + publicKey.substr(-6);
+
+    console.log('Signature: ', bytes);
+    document.getElementById('aleoAddress1').innerHTML = '<i class="dw dw-wallet" ></i>' + sub_str_wallet;
+    }
+
+
+	document.addEventListener("DOMContentLoaded", function () {
+	const copyAddressBtn = document.getElementById("copyAddressBtn");
+	const aleoAddress = document.getElementById("aleoAddress1");
+	copyAddressBtn.addEventListener("click", function () {
+    const textToCopy = aleoAddress.value;
+    navigator.clipboard.writeText(textToCopy);
+    alert("Address copied!");
+  });
+});
+</script>
+	<div class="header">
+		<div class="header-left">
+			<div class="menu-icon dw dw-menu"></div>
+			<div class="search-toggle-icon dw dw-search2" data-toggle="header_search"></div>
+			<div class="header-search">
+				<form action="check_aleo.php">
+					<div class="form-group mb-0">
+						<i class="dw dw-search2 search-icon"></i>
+						<input type="text" name="search_aleo" class="form-control search-input" placeholder="Search Aleo Address">
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="header-right">
+		
+		<!-- IF THE ADMIN CLICKS THE BUTTON, ALL ASSET PRICES ARE AFFECTED -->
+					
+			<div class="dashboard-setting user-notification">
+				<div class="dropdown">
+					<a class="dropdown-toggle no-arrow" href="javascript:;" data-toggle="right-sidebar">
+						<i class="dw dw-settings2"></i>
+					</a>
+				</div>
+			</div>
+			<div class="user-notification">
+				<div class="dropdown">
+					<a class="dropdown-toggle no-arrow" href="notification.php" >
+						<i class="icon-copy dw dw-notification"></i>
+											</a>
+				</div>
+			</div>
+
+
+			<div class="user-info-dropdown">
+				<div class="dropdown">
+					<a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+						<span class="user-icon">
+							<img src="./anon/anon2.jpeg" alt="">
+						</span>
+						<span class="user-name">Nomad123</span>
+					</a>
+					<div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
+						<a class="dropdown-item" href="#"><i class="dw dw-user1"></i> Profile</a>
+						<a class="dropdown-item" href="#"><i class="dw dw-help"></i> Help</a>
+						<a href="#" class="dropdown-item" onclick="main_connect()" id="aleoAddress1" ><i class="dw dw-wallet" ></i> connect</a>
+					</div>
+				</div>
+			</div>
+
+			
+			<div class="github-link">
+				<a href="https://github.com/Elexy101" target="_blank"><img src="vendors/images/github.svg" alt=""></a>
+			</div>
+		</div>
+	</div>
+<!-- WALLET CONNECT ALEO -->
+
+
+<!-- RIGHT SIDEBAR -->
+	<div class="right-sidebar">
+		<div class="sidebar-title">
+			<h3 class="weight-600 font-16 text-blue">
+				Layout Settings
+				<span class="btn-block font-weight-400 font-12">User Interface Settings</span>
+			</h3>
+			<div class="close-sidebar" data-toggle="right-sidebar-close">
+				<i class="icon-copy ion-close-round"></i>
+			</div>
+		</div>
+		<div class="right-sidebar-body customscroll">
+			<div class="right-sidebar-body-content">
+				<h4 class="weight-600 font-18 pb-10">Header Background</h4>
+				<div class="sidebar-btn-group pb-30 mb-10">
+					<a href="javascript:void(0);" class="btn btn-outline-primary header-white active">White</a>
+					<a href="javascript:void(0);" class="btn btn-outline-primary header-dark">Dark</a>
+				</div>
+
+				<h4 class="weight-600 font-18 pb-10">Sidebar Background</h4>
+				<div class="sidebar-btn-group pb-30 mb-10">
+					<a href="javascript:void(0);" class="btn btn-outline-primary sidebar-light ">White</a>
+					<a href="javascript:void(0);" class="btn btn-outline-primary sidebar-dark active">Dark</a>
+				</div>
+
+				<h4 class="weight-600 font-18 pb-10">Menu Dropdown Icon</h4>
+				<div class="sidebar-radio-group pb-10 mb-10">
+					<div class="custom-control custom-radio custom-control-inline">
+						<input type="radio" id="sidebaricon-1" name="menu-dropdown-icon" class="custom-control-input" value="icon-style-1" checked="">
+						<label class="custom-control-label" for="sidebaricon-1"><i class="fa fa-angle-down"></i></label>
+					</div>
+					<div class="custom-control custom-radio custom-control-inline">
+						<input type="radio" id="sidebaricon-2" name="menu-dropdown-icon" class="custom-control-input" value="icon-style-2">
+						<label class="custom-control-label" for="sidebaricon-2"><i class="ion-plus-round"></i></label>
+					</div>
+					<div class="custom-control custom-radio custom-control-inline">
+						<input type="radio" id="sidebaricon-3" name="menu-dropdown-icon" class="custom-control-input" value="icon-style-3">
+						<label class="custom-control-label" for="sidebaricon-3"><i class="fa fa-angle-double-right"></i></label>
+					</div>
+				</div>
+
+				<h4 class="weight-600 font-18 pb-10">Menu List Icon</h4>
+				<div class="sidebar-radio-group pb-30 mb-10">
+					<div class="custom-control custom-radio custom-control-inline">
+						<input type="radio" id="sidebariconlist-1" name="menu-list-icon" class="custom-control-input" value="icon-list-style-1" checked="">
+						<label class="custom-control-label" for="sidebariconlist-1"><i class="ion-minus-round"></i></label>
+					</div>
+					<div class="custom-control custom-radio custom-control-inline">
+						<input type="radio" id="sidebariconlist-2" name="menu-list-icon" class="custom-control-input" value="icon-list-style-2">
+						<label class="custom-control-label" for="sidebariconlist-2"><i class="fa fa-circle-o" aria-hidden="true"></i></label>
+					</div>
+					<div class="custom-control custom-radio custom-control-inline">
+						<input type="radio" id="sidebariconlist-3" name="menu-list-icon" class="custom-control-input" value="icon-list-style-3">
+						<label class="custom-control-label" for="sidebariconlist-3"><i class="dw dw-check"></i></label>
+					</div>
+					<div class="custom-control custom-radio custom-control-inline">
+						<input type="radio" id="sidebariconlist-4" name="menu-list-icon" class="custom-control-input" value="icon-list-style-4" checked="">
+						<label class="custom-control-label" for="sidebariconlist-4"><i class="icon-copy dw dw-next-2"></i></label>
+					</div>
+					<div class="custom-control custom-radio custom-control-inline">
+						<input type="radio" id="sidebariconlist-5" name="menu-list-icon" class="custom-control-input" value="icon-list-style-5">
+						<label class="custom-control-label" for="sidebariconlist-5"><i class="dw dw-fast-forward-1"></i></label>
+					</div>
+					<div class="custom-control custom-radio custom-control-inline">
+						<input type="radio" id="sidebariconlist-6" name="menu-list-icon" class="custom-control-input" value="icon-list-style-6">
+						<label class="custom-control-label" for="sidebariconlist-6"><i class="dw dw-next"></i></label>
+					</div>
+				</div>
+
+				<div class="reset-options pt-30 text-center">
+					<button class="btn btn-danger" id="reset-settings">Reset Settings</button>
+				</div>
+			</div>
+		</div>
+	</div><!-- LEFT SIDEBAR -->
+	<div class="left-side-bar">
+		<div>
+			<a href="#">
+				<img src="./aleo-2.jpeg" style="height: 7em; width: 100%" alt="">
+			</a>
+			<div class="close-sidebar" data-toggle="left-sidebar-close">
+				<i class="ion-close-round"></i>
+			</div>
+		</div>
+		<div class="menu-block customscroll">
+			<div class="sidebar-menu">
+				<ul id="accordion-menu">
+					<li>
+						<a href="crypto-main.php" class="dropdown-toggle no-arrow">
+							<span class="micon dw dw-house-1"></span><span class="mtext">Home</span>
+						</a>
+					</li>
+
+					
+					<!-- ALEO VOICE -->
+						<li>
+						<a href="voice.html" class="dropdown-toggle no-arrow">
+							<span class="micon dw dw-microphone"></span><span class="mtext">ALEO VOICE <span class="icon-copy ti-light-bulb text-success"></span></span>
+						</a>
+					</li>
+
+					<li>
+						<a href="co_bind.html" class="dropdown-toggle no-arrow">
+							<span class="micon dw dw-user"></span><span class="mtext">CO-BIND <span class="icon-copy ti-light-bulb text-success"></span></span>
+						</a>
+					</li>
+
+
+					<!-- coming soon 
+					<li>
+						<a href="co_bind.html" class="dropdown-toggle no-arrow">
+							<span class="micon dw dw-user"></span><span class="mtext">LIKE PRIVATELY!!! <span class="icon-copy ti-light-bulb text-success"></span></span>
+						</a>
+					</li>
+				-->
+
+
+					<!-- BANK -->
+						<li>
+						<a href="./developers/index.html" class="dropdown-toggle no-arrow">
+						<span class="micon dw dw-computer"></span><span class="mtext">Dev Offline (visit console)</span>
+						</a>
+					</li>
+
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="mobile-menu-overlay"></div>
+
+	<div class="main-container">
+		<div class="xs-pd-20-10 pd-ltr-20">
+			<div class="card-box pd-20 height-100-p mb-30">
+				<div class="row align-items-center">
+					<div class="col-md-4">
+						<img src="vendors/images/banner-img.png" alt="">
+					</div>
+					<div class="col-md-8">
+						<h4 class="font-20 weight-500 mb-10 text-capitalize">
+							Welcome To <div class="weight-600 font-30 text-blue">Aleo-Voice</div>
+<h6>
+						<p class="font-10 max-width-800"><strong>The Aleo voice text program is designed for sending voice messages (or any form of data represented as u128) between two users on the Aleo blockchain. The program ensures that only the sender and the receiver have access to the content of the message through encryption and hashing techniques.</strong></p>
+						<h6>
+						<br> So instead of sending tokens, user A can send voice privatized data to user B with a generated encrypt key which can be decrypted
+						<br>
+						<strong>Secure Messaging:</strong> The program can be used to securely send messages between users on the Aleo blockchain, ensuring that only the sender and receiver can access the content of the message.
+						<br><br>
+						<strong>Confidential Communication:</strong> By using hashing and encryption, the program ensures that messages are private and only visible to the intended recipient.
+						<br><br>
+						<strong>Data Integrity:</strong> The program checks the integrity of the users involved in the communication by hashing and combining their addresses, ensuring that the message is securely bound to both the sender and receiver.
+						<br><br>
+						Thank you!!! ;)
+</h6>
+                        
+
+                    </div>
+				</div>
+			</div>
+
+	
+			<div class="row pb-10">
+						
+				<div class="col-xl-12 col-lg-12 col-md-12 mb-20">
+					<div class="card-box height-100-p widget-style3">
+						<div class="d-flex flex-wrap">
+							<div class="widget-data">
+							<div class="weight-700 font-24 text-dark"><img src='aleo.png' width='100' height='70' style='margin-top: -0.39em' /> - test my message</div>
+								<strong><div class="font-14 text-secondary weight-500 text-right">communicate with friends with privacy. 1st Aleo messaging private application!!!</div></strong>
+								<input type="file" id="voiceInput" accept="audio/*" style="display:none;">
+  <button id="startBtn" class="btn btn-outline-primary">Start Recording</button>
+  <!-- <button id="uploadBtn" class="btn btn-outline-primary">Upload Voice(<small>inactive</small>)</button> -->
+  <button id="stopBtn" class="btn btn-outline-secondary" disabled>Stop Recording</button>
+  <br /><br>
+  <div id="output"></div>	
+  <div id="output2"></div>					
+	<p>
+								<!-- send to user -->
+								<input type="text" id="aleo_addr" class="form-control" name="user" placeholder="Recipient Aleo Address"/><br />
+                        		<!-- send to user -->
+								<input type="text" id="co_bind" class="form-control" name="user" placeholder="CoBind Hash Key"/><br />
+								<!-- send to user -->
+								<input type="text" id="place_message" class="form-control" name="user"  placeholder="Send a Message!!" disabled/><br />
+
+							</div>
+							<div class="widget-icon">
+								<button name="aleo_send" id="aleo_send"><div class="icon" data-color="#00eccf"><i class="icon-copy dw dw-microphone-11 text-danger"></i></div></button>
+							</div>
+				
+</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+<!--
+		=============================================================
+		====================== SENT Message ====================
+		=============================================================
+		-->
+		<div class="card-box pb-10">
+				<div class="h5 pd-20 mb-0"><i class="icon-copy dw dw-microphone-11"></i> Sent Message(s)</div>
+				<table id="sentMessageTableBody" class="data-table table nowrap">
+					<thead>
+						<tr>
+							<th class="table-plus">Addr</th>
+							<th>Msg</th>
+							<th>Date</th>
+							<th class="datatable-nosort">Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+											<tr>
+							<td class="table-plus">
+								<div class="name-avatar d-flex align-items-center">
+									<div class="avatar mr-2 flex-shrink-0">
+										<img src="./anon/anon2.jpeg" class="border-radius-100 shadow" width="40" height="40" alt="">
+									</div>
+									<div class="txt">
+										<div class="weight-600">Elexy101</div>
+									</div>
+								</div>
+							</td>
+							<td>1</td>
+							<td><span id="testingtime"></span></td>
+							<td><span class="badge badge-pill" data-bgcolor="#e7ebf5" data-color="#265ed7">sent|view</span></td>
+						</tr>
+										
+					</tbody>
+				</table>
+			</div>
+			
+			<hr>
+		<!--
+		=============================================================
+		==================== RECEIVED Message ==================
+		=============================================================
+		-->
+			<div class="card-box pb-10">
+				<div class="h5 pd-20 mb-0"><i class="icon-copy dw dw-microphone-11"></i> Received Message(s)</div>
+
+				<table id="sentMessageTableBody2" class="data-table table nowrap">
+					<thead>
+						<tr>
+							<th class="table-plus">Addr</th>
+							<th>Msg</th>
+							<th>Date</th>
+							<th class="datatable-nosort">Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+											<tr>
+							<td class="table-plus">
+								<div class="name-avatar d-flex align-items-center">
+									<div class="avatar mr-2 flex-shrink-0">
+										<img src="./anon/anon2.jpeg" class="border-radius-100 shadow" width="40" height="40" alt="">
+									</div>
+									<div class="txt">
+										<div class="weight-600">test1</div>
+									</div>
+								</div>
+							</td>
+							<td>89775582</td>
+							<td>10 months ago</td>
+							<td><span class="badge badge-pill" data-bgcolor="#e7ebf5" data-color="#265ed7">received|view</span></td>
+						</tr>
+										
+					</tbody>
+				</table>
+			</div>
+
+
+<br>
+	<div class="row pb-10">
+						
+		<div class="col-xl-12 col-lg-12 col-md-12 mb-20">
+			<div class="card-box height-100-p widget-style3">
+				<div class="d-flex flex-wrap">
+					<div class="widget-data">
+					<div class="weight-700 font-24 text-dark"><img src='aleo.png' width='100' height='70' style='margin-top: -0.39em' /> - reveal the message</div>
+						<strong><div class="font-14 text-secondary weight-500 text-right">communicate with friends/partners with privacy. 1st Aleo mailing private application!!!</div></strong>
+<p>
+	<div class="table">
+		<div class="cell">
+		  <input class="form-control" type="text" placeholder="input" id="txt_id">
+		  <input class="btn btn-success" type="button" id="btn1convert" value="Convert">
+		  <input class="btn btn-outline-secondary" type="button" id="cls_id" value="X">
+		  <input class="form-control" type="text" placeholder="output" id="cel_id" readonly>
+		</div>
+	</div>
+		
+</p>
+				</div>
+			</div>
+		</div>
+
+		<div id="output"></div>
+		<div id="output2"></div>
+	</div>
+		<!-- 
+		===========================================
+		================ FOOTER ===================
+		===========================================
+		-->
+		
+			<div class="title pb-20 pt-20">
+				<h2 class="h3 mb-0">Quick Start</h2>
+			</div>
+
+			<div class="row">
+				<div class="col-md-4 mb-20">
+					<a href="#" class="card-box d-block mx-auto pd-20 text-white-50" style="background-color: black">
+						<div class="img pb-30">
+							<center><img src="./anon/anon2.jpeg" alt=""></center>
+						</div>
+						<div class="content">
+							<center><h3 class="h4">== SIMPLE ==</h3>
+							<p>Simple sending a message</p></center>
+						</div>
+					</a>
+				</div>
+				<div class="col-md-4 mb-20">
+					<a href="#" class="card-box d-block mx-auto pd-20 text-white-50"  style="background-color: black">
+						<div class="img pb-30">
+							<img src="./anon/anon3.jpeg" alt="">
+						</div>
+						<div class="content">
+							<center><h3 class="h4">== PRIVATE ==</h3>
+							<p>Messaging is Anonymous!</p></center>
+						</div>
+					</a>
+				</div>
+				<div class="col-md-4 mb-20">
+					<a href="#" class="card-box d-block mx-auto pd-20 text-white-50"  style="background-color: black">
+						<div class="img pb-30">
+							<center><img src="./anon/anon2.jpeg" alt=""></center>
+						</div>
+						<div class="content">
+							<center><h3 class="h4">== MESSENGER ==</h3>
+							<p>Two parties required only...</p></center>
+						</div>
+					</a>
+				</div>
+			</div>
+
+			<div class="footer-wrap pd-20 mb-20 card-box">
+				ALEO SIMPLE TEXT MESSENGER - PROJECT <strong>BY</strong> <a href="https://github.com/Elexy101" target="_blank">Emmanuel Elexy</a>
+			</div>		
+		</div>
+	</div>
+	<!-- js -->
+	<script>
+		function bigIntToUInt64(bigIntValue) {
+  // Ensure the BigInt value is positive (no signed representation)
+  if (bigIntValue < 0n) {
+    throw new Error("Cannot convert negative BigInt to UInt64");
+  }
+
+  // Convert to a 64-bit unsigned integer
+  const MAX_UINT64 = 2n ** 64n;
+  const uint64Value = bigIntValue % MAX_UINT64;
+
+  return uint64Value;
+}
+
+// Example usage:
+const bigIntValue = 10410532104111119329711410132121111117n;
+const uint64Value = bigIntToUInt64(bigIntValue);
+console.log(uint64Value.toString());
+
+</script>
+
+<script>
+	function encryptToUInt64(bigIntValue) {
+  // Ensure the BigInt value is positive (no signed representation)
+  if (bigIntValue < 0n) {
+    throw new Error("Cannot encrypt negative BigInt to UInt64");
+  }
+
+  // Convert BigInt to UInt64 (64-bit integer)
+  const MAX_UINT64 = 2n ** 64n;
+  const uint64Value = bigIntValue % MAX_UINT64;
+
+  return uint64Value;
+}
+
+function decryptToBigInt(uint64Value) {
+  // Convert UInt64 (64-bit integer) back to BigInt
+  return BigInt(uint64Value);
+}
+
+// Example usage:
+const originalBigIntValue = 11511132102971143211511132103111111100n;
+
+// Encrypt the BigInt to UInt64
+const encryptedUInt64 = encryptToUInt64(originalBigIntValue);
+console.log("Encrypted UInt64:", encryptedUInt64.toString());
+
+// Decrypt the UInt64 back to BigInt
+const decryptedBigInt = decryptToBigInt(encryptedUInt64);
+console.log("Decrypted BigInt:", decryptedBigInt.toString());
+
+if (originalBigIntValue === decryptedBigInt) {
+  console.log("Encryption and decryption successful!");
+} else {
+  console.error("Encryption and decryption failed!");
+}
+</script>
+
+<script>
+// Function to convert a number to a UInt64
+function convertToUInt642(number) {
+  if (number < 0) {
+    throw new Error("Cannot convert a negative number to UInt64");
+  }
+  
+  const MAX_UINT64 = 2n ** 64n;
+  if (number >= MAX_UINT64) {
+    throw new Error("Number exceeds the limits of a UInt64");
+  }
+
+  return BigInt(number);
+}
+
+// Example usage:
+const originalNumber = 3271696713443002957;
+const uint64Value2 = convertToUInt642(originalNumber);
+
+console.log("UInt64 Value:", uint64Value2.toString());
+</script>
+
+<!-- Audio_aleo -->
+<script>
+    const startBtn = document.getElementById('startBtn');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const outputDiv = document.getElementById('output');
+    const voiceInput = document.getElementById('voiceInput');
+    const place_message = document.getElementById('place_message');
+
+
+    const matrix = [
+        ['1', ' ', '.', ',', '!'],
+        ['2', 'a', 'b', 'c'],
+        ['3', 'd', 'e', 'f'],
+        ['4', 'g', 'h', 'i'],
+        ['5', 'j', 'k', 'l'],
+        ['6', 'm', 'n', 'o'],
+        ['7', 'p', 'q', 'r', 's'],
+        ['8', 't', 'u', 'v'],
+        ['9', 'w', 'x', 'y', 'z'],
+        ['0', '-', '_', '@', '*', '+']
+    ];
+
+
+    let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
+    recognition.lang = 'en-US';
+
+    let recordedText = '';
+
+    recognition.onstart = () => {
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        outputDiv.innerText = 'Recording...';
+    };
+
+    recognition.onresult = (event) => {
+        const result = event.results[0][0].transcript;
+        recordedText += result.toLowerCase();;
+    };
+
+    recognition.onend = () => {
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        outputDiv.innerText = 'Recording ended. Text: ' + recordedText;
+        convertToBigInt(recordedText);
+    };
+
+    startBtn.addEventListener('click', () => {
+        recordedText = '';
+        recognition.start();
+    });
+
+    stopBtn.addEventListener('click', () => {
+        recognition.stop();
+    });
+
+    uploadBtn.addEventListener('click', () => {
+        voiceInput.click();
+    });
+
+    voiceInput.addEventListener('change', handleVoiceUpload);
+
+    function handleVoiceUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                recordedText = event.target.result.toLowerCase();
+                outputDiv.innerHTML = 'Voice uploaded. Text: ' + recordedText;
+                convertToBigInt(recordedText);
+            };
+            reader.readAsText(file);
+        }
+    }
+
+    function convertToBigInt(txt) {
+        place_message.value = '';  // Clear the field before appending new text
+        for (let i = 0; i < txt.length; i++) {
+            for (let x = 0; x < matrix.length; x++) {
+                if (matrix[x].indexOf(txt[i]) !== -1) {
+                    place_message.value += x + '' + matrix[x].indexOf(txt[i]);
+                }
+            }
+        }
+        console.log(place_message.value);
+    }
+
+</script>
+
+
+<script>
+    const textInput = document.getElementById('aleo_addr');
+	console.log(textInput);
+    const submitButton = document.getElementById('aleo_send');
+
+    submitButton.addEventListener('click', () => {
+        const inputValue = textInput.value.trim();
+		console.log(inputValue);
+
+        if (inputValue === '') {
+            alert('Please enter something.');
+        } else if ((inputValue.substring(0, 5) !== "aleo1") || (inputValue.length !== 63)) {
+            alert('Not an Aleo address');
+        } else {
+            const outputDiv = document.getElementById('place_message').value;
+			console.log(outputDiv);
+
+			const co_bind = document.getElementById('co_bind').value; // Replace with your actual value for co_bind
+			console.log(co_bind);
+
+			// For date and time
+			let date = Math.floor(Date.now() / 1000);
+			console.log(date);
+			document.getElementById('testingtime').textContent = date;
+
+            alert('Input is valid!');
+            
+            window.leoWallet.connect("ON_CHAIN_HISTORY", "testnetbeta", ["credits.aleo", "aleo_voice6.aleo"])
+                .then(res => {
+                    console.log(res);
+                    
+                    const publicKey = window.leoWallet.publicKey;
+                    
+                    if (!publicKey) {
+                        throw new Error('Wallet not connected.');
+                    }
+
+                    const inputs2 = [publicKey, inputValue, `${co_bind}field`, `${outputDiv}u128`, `${date}u128`];
+
+                    const aleoTransaction = Transaction.createTransaction(
+                        publicKey,
+                        'testnetbeta',
+                        'aleo_voice6.aleo',
+                        'send_voice',
+                        inputs2,
+                        200_000
+                    );
+
+                    if (aleoTransaction) {
+                        window.leoWallet.requestTransaction(aleoTransaction);
+                        console.log('Transaction requested successfully.');
+                    } else {
+                        console.error('Failed to create transaction.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error during wallet connection or transaction creation:', error);
+                });
+        }
+    });
+</script>
+
+	<script src="./audio-recorder-main/script.js"></script>
+	<script src="vendors/scripts/core.js"></script>
+	<script src="vendors/scripts/script.min.js"></script>
+	<script src="vendors/scripts/process.js"></script>
+	<script src="vendors/scripts/layout-settings.js"></script>
+	<script src="src/plugins/apexcharts/apexcharts.min.js"></script>
+	<script src="src/plugins/datatables/js/jquery.dataTables.min.js"></script>
+	<script src="src/plugins/jQuery-Knob-master/jquery.knob.min.js"></script>
+	<script src="src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
+	<script src="src/plugins/datatables/js/dataTables.responsive.min.js"></script>
+	<script src="src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
+	<script src="vendors/scripts/dashboard3.js"></script>
+	<script src="vendors/scripts/dashboard2.js"></script>
+	<!-- OUTPUT REVEAL MESSAGE -->
+	<script src="./main.js"></script>
+	<script>
+		let date = Math.floor(Date.now() / 1000);
+		console.log(date);
+		document.getElementById('testingtime').textContent = date;
+	</script>
+
+</body>
+</html>
