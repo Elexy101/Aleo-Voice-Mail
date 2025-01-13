@@ -53,11 +53,8 @@ The program can be used to implement a secure voice mail or messaging service on
 
 ## LEO COMMAND 
 - STEP 1: Go to the file folder
-- STEP 2: type this command `leo run combine_owner_receiver_hash aleo1az8p9vlllyqwtj0c2g9svkd0e5v0p3zzdflwwrpa7kpe8xrfxgfqqpru7m aleo1f5enhpxfz3l3pqyh8k9d5xkqu0njv27xp5sv4nedarrk3nrgnuzqm3pp9h --network testnet` to run the transition function (`combine_owner_receiver_hash`) which has `2` inputs representing the `owner` and `receiver` address respectively
-
-![Screenshot from 2024-09-07 04-36-56](https://github.com/user-attachments/assets/4cf40aff-5d9a-43ac-8347-6320fbbe23b6)
  
-- STEP 3:type this command `leo run send_voice aleo1az8p9vlllyqwtj0c2g9svkd0e5v0p3zzdflwwrpa7kpe8xrfxgfqqpru7m aleo1f5enhpxfz3l3pqyh8k9d5xkqu0njv27xp5sv4nedarrk3nrgnuzqm3pp9h 2410337194949654760603884559220116331158426312068391926144246629395435935799field 123456789u128 123456u128 --network testnet` to run the transition function (`send_voice`) which has `5` inputs representing the `owner`, `receiver`, `co_bind hash`, `message`, `date` respectively. The `co_bind` can be gotten from the STEP 2
+- STEP 2:type this command `leo run send_voice aleo1az8p9vlllyqwtj0c2g9svkd0e5v0p3zzdflwwrpa7kpe8xrfxgfqqpru7m aleo1f5enhpxfz3l3pqyh8k9d5xkqu0njv27xp5sv4nedarrk3nrgnuzqm3pp9h 2410337194949654760603884559220116331158426312068391926144246629395435935799field 123456789u128 123456u128 --network testnet` to run the transition function (`send_voice`) which has `5` inputs representing the `owner`, `receiver`, `co_bind hash`, `message`, `date` respectively. The `co_bind` can be gotten from the STEP 2
 
 ![Screenshot from 2024-09-07 04-39-04](https://github.com/user-attachments/assets/54732b88-60e5-4817-b0cd-10831daa428a)
 
