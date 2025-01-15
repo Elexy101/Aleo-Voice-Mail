@@ -28,12 +28,12 @@ The Aleo voice text program is designed for sending voice messages (or any form 
 (A) The message is hashed using the BHP256 hashing algorithm, creating a private version of the message (`hash_msg`).<br>
 (B) The system checks that User A is the actual sender and that User B is not the same as User A (preventing self-messaging).<br>
 (C) Both users’ addresses are hashed using the Keccak512 hashing algorithm and combined to generate a unique CoBind hash. This ensures the message is tied to both the sender and the recipient.<br>
-(D) The system creates a `Voice record`, which stores the message, the recipient's address, and the hashed message.<br>
+(D) The system creates a 2 `Voice record`, which stores the message, the recipient's address, and the hashed message and vice versa.<br>
 (E) The `finalize_send_voice` function then stores the hashed message in the `voice_input` mapping for User B.<br>
 
 2. Hashing and Binding Users (combine_owner_receiver_hash function):
 
-- This function creates a combined hash of both the sender’s and receiver’s addresses using the <b>Keccak512</b> algorithm. This combined hash, stored in the CoBind record, acts as a unique identifier that binds the two users together for this message.
+- This function creates a combined hash of both the sender’s and receiver’s addresses using the <b>Keccak512</b> algorithm. This combined hash, acts as a unique identifier that binds the two users together for this message.
 
 ## Privacy and Security Features:
 - <b>Message Hashing:</b> Before sending the message, it is hashed using <b>BHP256</b>. This converts the original message into an unreadable format unless decrypted by the intended recipient.
@@ -50,6 +50,9 @@ The program can be used to implement a secure voice mail or messaging service on
 - <b>Blockchain-Based Messaging App:</b> It can serve as the foundation for decentralized, encrypted messaging applications.
 
 - <b>Proof of Communication:</b> Since the message and user hashes are stored on the blockchain, this system can act as proof of communication between two users without revealing the actual content.
+
+## INTEGRATION OF ALEO NAME SERVICE:
+The project now supports aleo name service(.ans). Each user have to register aleo name service as its primary name to use the application without need of aleo address. we hope this will foster the communication between users
 
 ## LEO COMMAND 
 - STEP 1: Go to the file folder
