@@ -14,8 +14,6 @@ The Aleo voice text program is designed for sending voice messages (or any form 
   `msg`: The actual message (or voice note) sent by the sender (User A).
   
   `hash_msg`: A hashed version of the message for additional privacy.
-  
-2. CoBind: This record stores a combined hash of the sender's and receiver's addresses. It ensures that the message is bound specifically to these two users, making sure no other users can intercept or view the message.
 
 - Mapping:
   `voice_input`: A mapping that stores the hash of the message for each receiver. This ensures that every user has a unique entry for the message they receive.
@@ -27,20 +25,11 @@ The Aleo voice text program is designed for sending voice messages (or any form 
   
 (A) The message is hashed using the BHP256 hashing algorithm, creating a private version of the message (`hash_msg`).<br>
 (B) The system checks that User A is the actual sender and that User B is not the same as User A (preventing self-messaging).<br>
-(C) Both users’ addresses are hashed using the Keccak512 hashing algorithm and combined to generate a unique CoBind hash. This ensures the message is tied to both the sender and the recipient.<br>
-(D) The system creates a 2 `Voice record`, which stores the message, the recipient's address, and the hashed message and vice versa.<br>
-(E) The `finalize_send_voice` function then stores the hashed message in the `voice_input` mapping for User B.<br>
-
-2. Hashing and Binding Users (combine_owner_receiver_hash function):
-
-- This function creates a combined hash of both the sender’s and receiver’s addresses using the <b>Keccak512</b> algorithm. This combined hash, acts as a unique identifier that binds the two users together for this message.
+(C) The system creates a 2 `Voice record`, which stores the message, the recipient's address, and the hashed message and vice versa.<br>
+(D) The `finalize_send_voice` function then stores the hashed message in the `voice_input` mapping for User B.<br>
 
 ## Privacy and Security Features:
 - <b>Message Hashing:</b> Before sending the message, it is hashed using <b>BHP256</b>. This converts the original message into an unreadable format unless decrypted by the intended recipient.
-
-- <b>Address Hashing:</b> The sender and receiver addresses are also hashed using <b>Keccak512</b> to ensure privacy. This helps in protecting the identity of both users, especially in public blockchain environments.
-
-- <b>Co-Binding:</b> The use of the CoBind structure ensures that the message is only accessible by the sender and receiver. If the hashed combination of their addresses does not match, the system will reject the transaction, thus preventing unauthorized access.
 
 ## Use Case of Aleo Voice Mail:
 The program can be used to implement a secure voice mail or messaging service on the Aleo blockchain. It is particularly useful in scenarios where privacy is paramount, such as:
@@ -51,13 +40,13 @@ The program can be used to implement a secure voice mail or messaging service on
 
 - <b>Proof of Communication:</b> Since the message and user hashes are stored on the blockchain, this system can act as proof of communication between two users without revealing the actual content.
 
-## INTEGRATION OF ALEO NAME SERVICE:
+## UPDATE: INTEGRATION OF ALEO NAME SERVICE:
 The project now supports aleo name service(.ans). Each user have to register aleo name service as its primary name to use the application without need of aleo address. we hope this will foster the communication between users
 
 ## LEO COMMAND 
 - STEP 1: Go to the file folder
  
-- STEP 2:type this command `leo run send_voice aleo1az8p9vlllyqwtj0c2g9svkd0e5v0p3zzdflwwrpa7kpe8xrfxgfqqpru7m aleo1f5enhpxfz3l3pqyh8k9d5xkqu0njv27xp5sv4nedarrk3nrgnuzqm3pp9h 2410337194949654760603884559220116331158426312068391926144246629395435935799field 123456789u128 123456u128 --network testnet` to run the transition function (`send_voice`) which has `5` inputs representing the `owner`, `receiver`, `co_bind hash`, `message`, `date` respectively. The `co_bind` can be gotten from the STEP 2
+- STEP 2:type this command `leo run send_voice aleo1az8p9vlllyqwtj0c2g9svkd0e5v0p3zzdflwwrpa7kpe8xrfxgfqqpru7m aleo1f5enhpxfz3l3pqyh8k9d5xkqu0njv27xp5sv4nedarrk3nrgnuzqm3pp9h 2410337194949654760603884559220116331158426312068391926144246629395435935799field 123456789u128 123456u128 --network testnet` to run the transition function (`send_voice`) which has `4` inputs representing the `owner`, `receiver`, `message`, `date` respectively.
 
 ![Screenshot from 2024-09-07 04-39-04](https://github.com/user-attachments/assets/54732b88-60e5-4817-b0cd-10831daa428a)
 
