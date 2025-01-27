@@ -1,6 +1,7 @@
 # Aleo-Voice-Mail
 This program exemplifies how blockchain technology, combined with cryptographic techniques, can facilitate secure and private communication between users.
 
+DEPLOYED LINK: https://testnet.aleo.info/program/aleo_voice101.aleo
 ## DESCRIPTION 
 The Aleo voice text program is designed for sending voice messages (or any form of data represented as u128) between two users on the Aleo blockchain. The program ensures that only the sender and the receiver have access to the content of the message through encryption and hashing techniques.
 
