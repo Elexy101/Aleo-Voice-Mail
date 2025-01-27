@@ -1,5 +1,6 @@
+import aleo_name_service_registry_v4.aleo;
 
-program aleo_voice123.aleo {
+program aleo_voice1.aleo {
 
     // Struct to track the total number of messages sent from an address
     struct TotalMessage {
@@ -8,14 +9,14 @@ program aleo_voice123.aleo {
     }
 
     // Mapping for storing the total number of messages sent by each address
-    mapping voice_input: field => TotalMessage;
-    
+    mapping voice_input: address => TotalMessage;
+
     // Struct for representing a voice message
     record Voice {
         owner: address,
         sent_from: address,
         msg: field,
-        hash_msg: u128,
+        hash_msg: field,
         date: u128,
     }
 
@@ -24,14 +25,16 @@ program aleo_voice123.aleo {
         owner: address,
         sent_to: address,
         msg: field,
-        hash_msg: u128,
+        hash_msg: field,
         date: u128,
     }
 
+
+
     // Transition for sending a voice note to another user
-    async transition send_voice(owner: address, receiver: address, msg: u128, date: u128) -> (Voice, Voice2, Future) {
+    async transition send_voice(owner: address, receiver: address, msg: field, date: u128) -> (Voice, Voice2, Future) {
         // Hash the message
-        let hash: u128 = BHP256::hash_to_u128(msg as field);
+        let hash: field = BHP256::hash_to_field(msg);
 
         // Check that the sender is not null and that the receiver is not the sender
         assert_eq(self.caller, owner);
@@ -41,7 +44,7 @@ program aleo_voice123.aleo {
         let send_from: Voice = Voice {
             owner: receiver,
             sent_from: owner,
-            msg: msg as field,
+            msg: msg,
             hash_msg: hash,
             date: date,
         };
@@ -50,7 +53,7 @@ program aleo_voice123.aleo {
         let send_to : Voice2 = Voice2 {
             owner: owner,
             sent_to: receiver,
-            msg:  msg as field, // real msg
+            msg:  msg, // real msg
             hash_msg: hash, // private msg encrypted
             date: date,
         };
@@ -62,17 +65,24 @@ program aleo_voice123.aleo {
 
     // Function to finalize the process of sending a voice note
     async function finalize_send_voice(owner: address, receiver: address) {
-        // Hash the owner's address
-        let hash_owner: field = Keccak512::hash_to_field(owner);
+
+        //check if a owner have aleo name service registered
+        let check_ans_owner: bool = Mapping::contains(aleo_name_service_registry_v4.aleo/primary_names, owner);
+        //check if a receiver have aleo name service registered
+        let check_ans_receiver: bool = Mapping::contains(aleo_name_service_registry_v4.aleo/primary_names, receiver);
+
+        //checking if aleo name service for owner/receiver
+        assert(check_ans_owner == true);
+        assert(check_ans_receiver == true);
 
         // Get or create a TotalMessage record for the owner
-        let tot_message: TotalMessage = Mapping::get_or_use(voice_input, hash_owner, TotalMessage {
+        let tot_message: TotalMessage = Mapping::get_or_use(voice_input, owner, TotalMessage {
             messenger: owner,
             total_messages: 0u64,
         });
 
         // Increment the total number of messages sent by the owner
-        Mapping::set(voice_input, hash_owner, TotalMessage {
+        Mapping::set(voice_input, owner, TotalMessage {
             messenger: owner,
             total_messages: tot_message.total_messages + 1u64,
         });
