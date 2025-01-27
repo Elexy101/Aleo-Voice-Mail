@@ -41,10 +41,13 @@ The program can be used to implement a secure voice mail or messaging service on
 - <b>Proof of Communication:</b> Since the message and user hashes are stored on the blockchain, this system can act as proof of communication between two users without revealing the actual content.
 
 ## UPDATE: INTEGRATION OF ALEO NAME SERVICE:
-The project now supports aleo name service(.ans). Each user have to register aleo name service as its primary name to use the application without need of aleo address. we hope this will foster the communication between users
+The project now supports aleo name service(.ans). Each user have to register aleo name service as its primary name to use the application without need of aleo address. we hope this will foster the communication between users.
+
+As developing the application, we use the `leo add aleo_name_service_registry_v4.aleo` to add the aleo name service contract dependencies into our project to fetch data from aleo name service contract
 
 ## LEO COMMAND 
 - STEP 1: Go to the file folder
+- STEP 2: type this command `leo add aleo_name_service_registry_v4.aleo`
  
 - STEP 2:type this command `leo run send_voice aleo1az8p9vlllyqwtj0c2g9svkd0e5v0p3zzdflwwrpa7kpe8xrfxgfqqpru7m aleo1f5enhpxfz3l3pqyh8k9d5xkqu0njv27xp5sv4nedarrk3nrgnuzqm3pp9h 2410337194949654760603884559220116331158426312068391926144246629395435935799field 123456789u128 123456u128 --network testnet` to run the transition function (`send_voice`) which has `4` inputs representing the `owner`, `receiver`, `message`, `date` respectively.
 
