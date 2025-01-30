@@ -52,6 +52,13 @@ As developing the application, we use the `leo add aleo_name_service_registry_v4
  
 - STEP 2:type this command `leo run send_voice aleo1az8p9vlllyqwtj0c2g9svkd0e5v0p3zzdflwwrpa7kpe8xrfxgfqqpru7m aleo1f5enhpxfz3l3pqyh8k9d5xkqu0njv27xp5sv4nedarrk3nrgnuzqm3pp9h 2410337194949654760603884559220116331158426312068391926144246629395435935799field 123456789u128 123456u128 --network testnet` to run the transition function (`send_voice`) which has `4` inputs representing the `owner`, `receiver`, `message`, `date` respectively.
 
+## UPCOMING UI FOR USERS
+![5825967015419036432](https://github.com/user-attachments/assets/dad9049e-f927-4836-a024-bbd13ee9560e)
+
+![WhatsApp Image 2025-01-29 at 12 08 46 PM](https://github.com/user-attachments/assets/8c97b57d-d580-4f5b-970a-4c6bf62d97d3)
+
+
+
 ![Screenshot from 2024-09-07 04-39-04](https://github.com/user-attachments/assets/54732b88-60e5-4817-b0cd-10831daa428a)
 
 
